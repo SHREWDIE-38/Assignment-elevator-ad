@@ -9,14 +9,16 @@ import {setAdvertisements} from "./redux/Resource"
 
 function App() {
 
-  const dummyData = [{
+  const dummyData = [
+    {
       id: 'AD_001',
       category: 'DELIVERY',
       transmissionDate: '2022-10-15',
       startTime: '12:00',
       endTime: '18:00',
       limitPerDay: '10',
-    }]
+    },
+  ]
 
   const dispatch = useDispatch()
   dispatch(setAdvertisements(dummyData))

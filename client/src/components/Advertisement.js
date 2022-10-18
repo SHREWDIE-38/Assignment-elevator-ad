@@ -72,7 +72,7 @@ export default function Advertisement(){
         <AdvertisementWrap>
             <div id='advertisement'>
                 <div>
-                    광고
+                    {adData.id}광고
                 </div>
                 <img className='qrcode' src={qrcode}/>
             </div>

@@ -35,10 +35,6 @@ export default function UserPage() {
 
     console.log(decrypt(adData))
 
-
-    const bytes = CryptoJS.AES.encrypt(params.adData, 'a34g93u4jd023h235gbifiue8').toString();
-    const originalText = bytes.toString(CryptoJS.enc.Utf8);
-
     // console.log(JSON.parse(originalText))
 
     // let sessionStorage = window.sessionStorage;
