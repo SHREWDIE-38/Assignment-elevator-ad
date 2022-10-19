@@ -1,8 +1,12 @@
 const express = require('express');
 const indexRouter = require('./routes');
+const cors = require('cors');
 const app = express();
 const port = 4000;
 
+
+
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/', indexRouter);

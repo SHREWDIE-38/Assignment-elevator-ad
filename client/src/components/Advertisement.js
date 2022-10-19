@@ -3,6 +3,88 @@ import styled from 'styled-components';
 import QRCode from 'qrcode';
 import { useSelector, useDispatch } from 'react-redux';
 import CryptoJS from 'crypto-js'
+import {setAllAds, setCurrentAd} from "../redux/Resource"
+import axios from 'axios';
+
+
+
+
+export default function Advertisement(){
+
+    const [qrcode, setQrcode] = useState('')
+    const [ad, setAd] = useState('')
+
+
+    const encrypt = (value) => {
+        const secretKey = 'a34g93u4jd023h235gbifiue8'
+        const encrypted = CryptoJS.AES.encrypt(JSON.stringify(value), secretKey);
+        const result = encrypted.toString()
+
+        return encodeURIComponent(result)
+    }
+
+    const buildQRCode = (ad) => {
+        const adUrl = `http://localhost:3000/${encrypt(ad)}`
+        console.log(`현재 QR코드 주소는 ${adUrl} 입니다.`)
+
+        QRCode.toDataURL(adUrl, (err, url) => {
+            if(err){
+                return console.log(err)
+            }
+            setQrcode(url)
+        })
+    }
+
+    const moveNext = (allAds, index) => {
+        console.log(`${index}번째 광고입니다.`)
+        if(allAds.length <= index){
+            console.log('out')
+            return
+        } else {
+            setTimeout(() => {
+                setAd(allAds[index])
+                buildQRCode(allAds[index])
+                moveNext(allAds, index + 1)
+            }, 2000);
+        }
+        
+    }
+
+    const transmitAd = ( allAds ) => {
+        // setTimeout(() => {
+        //     console.log("2초 후에 실행됨")
+        //     setAd(allAds[1])
+        //     buildQRCode(allAds[1])
+        // }, 2000);
+        const adToBeTransmit = allAds[0]
+
+        setAd(adToBeTransmit)
+        buildQRCode(adToBeTransmit)
+        moveNext(allAds, 1)
+    }
+
+    const buildComponent = async () => {
+        const response = await axios.get(`http://localhost:4000/ad`)
+        const allAds = await response.data
+
+        transmitAd(allAds)
+    }
+
+    useEffect(() => {
+        buildComponent()
+    }, []);
+    
+    return(
+        <AdvertisementWrap>
+            <div id='advertisement'>
+                <div>
+                    {ad.id}
+                </div>
+                <img className='qrcode' src={qrcode}/>
+            </div>
+        </AdvertisementWrap>
+    )
+}
 
 const AdvertisementWrap = styled.div`
     display: flex;
@@ -26,56 +108,3 @@ const AdvertisementWrap = styled.div`
         height: 20vw;
     }
 `
-
-export default function Advertisement(){
-    //const secretKey = process.env.REACT_APP_SECRETKEY
-    const secretKey = 'a34g93u4jd023h235gbifiue8'
-    const adData = useSelector((state) => state.resource.advertisements[0])
-
-    const encrypt = (value) => {
-        const encrypted = CryptoJS.AES.encrypt(JSON.stringify(value), secretKey);
-        let result = encrypted.toString()
-
-        return encodeURIComponent(result)
-    }
-
-    const [url, serUrl] = useState('https://google.com')
-    const [qrcode, setQrcode] = useState('')
-
-    const time = new Date();
-
-    // const {id, category, transmissionDate, startTime, endTime, limitPerDay} = useSelector((state) => state.resource.advertisements[0]);
-    
-    // console.log(advertisements)
-    
-    // const currentAdUrl = `http://localhost:3000/${id}/${category}/${transmissionDate}/${startTime}/${endTime}/${limitPerDay}/${time}`
-    const currentAdUrl = `http://localhost:3000/${encrypt(adData)}`
-
-    const generateQRCode = () => {
-        console.log()
-        console.log(`현재 QR코드 주소는 ${currentAdUrl} 입니다.`)
-        QRCode.toDataURL(currentAdUrl, (err, url) => {
-            if(err){
-                return console.log(err)
-            }
-            
-            setQrcode(url)
-        })
-    }
-
-    useEffect(() => {
-        generateQRCode()
-    }, []);
-
-
-    return(
-        <AdvertisementWrap>
-            <div id='advertisement'>
-                <div>
-                    {adData.id}광고
-                </div>
-                <img className='qrcode' src={qrcode}/>
-            </div>
-        </AdvertisementWrap>
-    )
-}

@@ -1,5 +1,7 @@
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import CryptoJS from 'crypto-js'
 
 const UserInputWrap = styled.div`
     display: flex;
@@ -20,57 +22,38 @@ const UserInputWrap = styled.div`
 `
 
 export default function UserInput() {
+  const secretKey = 'a34g93u4jd023h235gbifiue8'
+  const params = useParams();
+  const adData = params.adData
+
+  const decrypt = (encrypted) => {
+    let bytes = CryptoJS.AES.decrypt(encrypted, secretKey);
+    let decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    
+    return decrypted;
+  }
+
+  console.log(decrypt(adData))
 
   const [inputUsername, setInputUsername] = useState('')
-  const [inputEmail, setInputEmail] = useState('');
+  const [inputUserMail, setInputUserMail] = useState('');
   const [isChecked, setIsChecked] = useState(false);
 
-  
-  const [usernameWarning, setUsernameWarning] = useState(false)
-  const [emailWarning, setEmailWarning] = useState(false)
-
-  const [emptyEmailWarning, setEmptyEmailWarning] = useState(false)
-  const [emptyUsernameWarning, setEmptyUsernameWarning] = useState(false)
-
   const usernameFilter = (value) => {
-    setEmptyUsernameWarning(false)
-    const regExp = /[ \{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
-
-    if(regExp.test(value)){
-      const inputValue = value.slice(0, value.length - 1)
-      setInputUsername(inputValue)
-      return
-    } 
-
-    if(value.length > 12){
-      const inputValue = value.slice(0, 12)
-      setInputUsername(inputValue)
-      return
-    }
-
     setInputUsername(value)
   }
 
   const emailFilter = (value) => {
-    setEmptyEmailWarning(false)
-    const regExp = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-    if(value === ''){
-      setInputEmail(value)
-      setEmailWarning(false)
-    } else {
-      if(regExp.test(value)){
-        setInputEmail(value)
-        setEmailWarning(false)
-      } else {
-        setInputEmail(value)
-        setEmailWarning(true)
-      }
-    }
+    setInputUserMail(value)
   }
 
   const check = () => {
     setIsChecked(!isChecked)
   }
+
+  const send = () => {
+  }
+
 
   return (
     <UserInputWrap>
@@ -88,19 +71,19 @@ export default function UserInput() {
           type="email"
           placeholder="메일 주소"
           onChange={(event) => { emailFilter(event.target.value) }}
-          value={inputEmail}
+          value={inputUserMail}
           maxLength='40'
         />
         <div>
           약관에 동의하십니까?
-        <input 
-        className='check-box'
-        type='checkbox'
-        onChange={(event) => check(event)}
-        checked={isChecked}
-        />
+          <input
+            className='check-box'
+            type='checkbox'
+            onChange={(event) => check(event)}
+            checked={isChecked}
+          />
         </div>
-        <button>전송</button>
+        <button onClick={() => send()}>전송</button>
       </div>
     </UserInputWrap>
   )

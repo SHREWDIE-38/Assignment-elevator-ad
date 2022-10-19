@@ -6,12 +6,16 @@ import { createSlice } from '@reduxjs/toolkit';
 export const resourceSlice = createSlice({
     name: 'resource',
     initialState: {
-        advertisements: [],
+        allAds: [],
+        currentAd: {},
         userInfo: {}
     },
     reducers: {
-        setAdvertisements: (state, action) => {
-            state.advertisements = action.payload;
+        setAllAds: (state, action) => {
+            state.allAds = action.payload;
+        },
+        setCurrentAd: (state, action) => {
+            state.currentAd = action.payload;
         },
         setUserInfo: (state, action) => {
             state.userInfo = action.payload;
@@ -19,5 +23,5 @@ export const resourceSlice = createSlice({
     },
 });
 
-export const {setAdvertisements, setUserInfo} = resourceSlice.actions;
+export const {setAllAds, setCurrentAd, setUserInfo} = resourceSlice.actions;
 export default resourceSlice.reducer;
