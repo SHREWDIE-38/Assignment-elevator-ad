@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CryptoJS from 'crypto-js'
+import axios from 'axios';
 
 const UserInputWrap = styled.div`
     display: flex;
@@ -14,26 +15,27 @@ const UserInputWrap = styled.div`
         justify-content: center;
         flex-direction: column;
 
-        width: 90vw;
-        height: 160vw;
+        width: 50vh;
+        height: 100vh;
         background-color: pink;
         border: solid;
     }
 `
 
 export default function UserInput() {
-  const secretKey = 'a34g93u4jd023h235gbifiue8'
   const params = useParams();
   const adData = params.adData
+  const decryptedAdData = decrypt(adData)
 
-  const decrypt = (encrypted) => {
+  function decrypt (encrypted) {
+    const secretKey = 'a34g93u4jd023h235gbifiue8'
     let bytes = CryptoJS.AES.decrypt(encrypted, secretKey);
     let decrypted = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    
+
     return decrypted;
   }
 
-  console.log(decrypt(adData))
+  console.log(decryptedAdData)
 
   const [inputUsername, setInputUsername] = useState('')
   const [inputUserMail, setInputUserMail] = useState('');
@@ -52,12 +54,27 @@ export default function UserInput() {
   }
 
   const send = () => {
+    axios.post(`http://localhost:4000/user`, {
+      elevatorID: 1,
+      adID: decryptedAdData.id,
+      QRCodeScanTime: 1,
+      userName: inputUsername,
+      userMail: inputUserMail,
+      agreement: isChecked,
+    })
+    .then((res) => {
+
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
 
   return (
     <UserInputWrap>
       <div id='UserInput'>
+        <div>{decryptedAdData.id}</div>
         <input
           className='input-area'
           type='username'

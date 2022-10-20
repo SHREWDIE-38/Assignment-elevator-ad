@@ -18,13 +18,7 @@ module.exports = {
       if(!elevatorID || !adID || !QRCodeScanTime || !userName || !userMail || !agreement) {
         res.sendStatus(400)
       } else {
-        // models.orders.post(userId, orders, totalPrice, (error, result) => {
-        //   if(error) {
-        //     res.sendStatus(500)
-        //   } else {
-        //     res.status(201).json(result);
-        //   }
-        // })
+        console.log(req.body)
         res.status(201).json()
       }
     },
