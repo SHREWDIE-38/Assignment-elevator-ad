@@ -1,7 +1,7 @@
 ### 로컬 환경 실행 방법
 - 터미널 server 위치에서 `npm install`후 `npm start`로 서버를 실행합니다.
 
-- 터미널 client 위치에서 `npm install`후 `npm start`로 클라이언트를 실행합니다.
+- 서버를 실행시킨 후 터미널 client 위치에서 `npm install`후 `npm start`로 클라이언트를 실행합니다.
 
 ### 파일 위치
 
