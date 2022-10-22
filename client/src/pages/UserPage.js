@@ -6,11 +6,11 @@ const UserInputWrap = styled.div`
 `
 
 export default function UserPage() {
-  return (
-    <UserInputWrap>
-      <div id='UserInput'>
-        <UserInput/>
-      </div>
-    </UserInputWrap>
-  )
+    return (
+        <UserInputWrap>
+            <div id='UserInput'>
+                <UserInput />
+            </div>
+        </UserInputWrap>
+    )
 }
