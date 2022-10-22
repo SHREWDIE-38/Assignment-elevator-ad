@@ -62,40 +62,37 @@ export default function Advertisement(){
         const adToTransmit = randomValueFromArray(adsToTransmit)
         setAd(adToTransmit)
         buildQRCode(adToTransmit)
-
+        
         // 송출한 후 30초가 지나면 송출 횟수 기록에서 송출한 광고를 찾아 횟수를 더해줍니다.
         setTimeout(() => {
-            const inputArray = adTranmitNumbers.map((ad) => {
-                if(ad.id === adToTransmit.id){
-                    return {id: ad.id, numberOfTransmission: ad.numberOfTransmission + 1}
-                } else {
-                    return ad
-                }
-            })
-            setAdTranmitNumbers((array) => inputArray)
+            const foundAd = adTranmitNumbers.find((rad) => rad.id === adToTransmit.id) || 0
+            if(foundAd === 0){
+                // 해당 광고의 송출 횟수 기록이 없으면 새로 기록합니다.
+                setAdTranmitNumbers([...adTranmitNumbers, {id: adToTransmit.id, numberOfTransmission: 1}])
+            } else {
+                // 해당 광고의 송출 횟수 기록이 있으면 횟수를 더해줍니다.
+                const inputArray = adTranmitNumbers.map((ad) => {
+                    if(ad.id === adToTransmit.id){
+                        return {id: ad.id, numberOfTransmission: ad.numberOfTransmission + 1}
+                    } else {
+                        return ad
+                    }
+                })
+                setAdTranmitNumbers((array) => inputArray)
+            }
         }, 30000)
-    }
-
-    // 송출 횟수를 기록하는 배열을 만들어 상태에 넣어주는 함수입니다.
-    const makeAdTransmitNumbers = (array) => {
-        const adLimit = array.map((ad) => {
-            return {id: ad.id, numberOfTransmission: 0}
-        })
-        setAdTranmitNumbers(adLimit)
     }
 
     // 광고 컴포넌트를 구축하는 함수입니다. 
     const buildComponent = async () => {
-        
         // 광고 데이터가 없을 경우 서버로부터 데이터를 가져옵니다.
         if(allAds.length === 0){
             // 광고 데이터 객체로 이루어진 배열 형태의 데이터를 가져옵니다.
             const response = await axios.get(`http://localhost:4000/ad`)
             const responseAds = await response.data
             await setAllAds(responseAds)
-            await makeAdTransmitNumbers(responseAds)
             await transmitAd(responseAds)
-            console.log('서버에서 광고 데이터를 수신받았습니다.')
+            console.log('서버에서 광고 데이터를 수신 받았습니다.')
         } else {
             await transmitAd(allAds)
         }
@@ -121,7 +118,7 @@ export default function Advertisement(){
                     표시 시작 시간: <span className='important-text'>{ad.startTime} </span><br/>
                     표시 종료 시간: <span className='important-text'>{ad.endTime} </span><br/>
                     하루 송출 제한 횟수: <span className='important-text'>{ad.limitPerDay}</span> <br/>
-                    송출 횟수: <span className='important-text'>{adr.numberOfTransmission}</span>
+                    송출 횟수: <span className='important-text'>{adr.numberOfTransmission + 1 || 1}</span>
                 </div>
                 <img className='qrcode' src={qrcode} />
                 <button className='scan-button' onClick={() => window.open(adUrl, '_blank')}>QR코드 스캔 페이지 열기 버튼</button>

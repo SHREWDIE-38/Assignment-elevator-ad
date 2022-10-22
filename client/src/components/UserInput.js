@@ -39,20 +39,19 @@ export default function UserInput() {
                 setWorningMassage('메일 형식이 올바르지 않습니다.')
             } else if (!inputUsername || !inputUserMail) {
                 setWorningMassage('이름과 메일주소를 입력해주세요.')
-            } else if (!isChecked) {
-                setWorningMassage('약관에 동의해주세요.')
             } else {
+                // 서버로 엘리베이터 ID, 광고 ID, QR 코드를 스캔한 시간, 사용자 이름, 사용자 메일 주소, 약관 동의 여부를 전송합니다.
                 const payload = {
                     elevatorID: elevatorID,
                     adID: decryptedAdData.id,
                     QRCodeScanTime: scanTime,
                     userName: inputUsername,
                     userMail: inputUserMail,
-                    agreement: isChecked,
+                    agreement: isChecked? 'Y' : 'N',
                 }
                 axios.post(`http://localhost:4000/user`, payload)
                     .then((res) => {
-                        console.log('서버에 아래 내용을 전달하였습니다.')
+                        console.log('서버에 아래 내용을 전송하였습니다.')
                         console.log(payload)
                         alert('전송 되었습니다.')
                     })
@@ -65,7 +64,7 @@ export default function UserInput() {
 
     // 스캔한 시간을 세션 스토리지에 기록합니다. 5분이 지나면 세션 스토리지를 비웁니다.
     useEffect(() => {
-        let scanTime = new Date
+        let scanTime = new Date()
         console.log('스캔한 시간은 ' + scanTime + '입니다.')
         sessionStorage.setItem('scanTime', scanTime)
         setTimeout(() => { sessionStorage.clear() }, 300000)
@@ -74,6 +73,7 @@ export default function UserInput() {
 
     // 사용자 이름을 유효성 검사하는 함수입니다.
     const usernameFilter = (value) => {
+        // eslint-disable-next-line
         const regExp = /[ \{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
         if (regExp.test(value)) {
             const inputValue = value.slice(0, value.length - 1)
